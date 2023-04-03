@@ -1,6 +1,7 @@
 use crate::core::bundlepack::*;
 use crate::core::*;
 use crate::routing::RoutingNotifcation;
+use crate::store_expire_older_than;
 use crate::store_push_bundle;
 use crate::store_remove;
 use crate::CONFIG;
@@ -25,6 +26,14 @@ use tokio::sync::mpsc::channel;
 
 // transmit an outbound bundle.
 pub async fn send_bundle(bndl: Bundle) {
+    if bndl
+        .primary
+        .bundle_control_flags
+        .contains(BundleControlFlags::BUNDLE_EXPIRE_OLDER_BUNDLES)
+        && !bndl.is_administrative_record()
+    {
+        store_expire_older_than(&bndl);
+    }
     tokio::spawn(async move {
         if let Err(err) = store_push_bundle(&bndl) {
             warn!("Transmission failed: {}", err);
@@ -169,6 +178,14 @@ pub async fn receive(mut bndl: Bundle) -> Result<()> {
     for i in remove_idx {
         // Remove canoncial blocks marked for deletion
         bndl.canonicals.remove(i);
+    }
+    if bndl
+        .primary
+        .bundle_control_flags
+        .contains(BundleControlFlags::BUNDLE_EXPIRE_OLDER_BUNDLES)
+        && !bndl.is_administrative_record()
+    {
+        store_expire_older_than(&bndl);
     }
     if let Err(err) = store_push_bundle(&bndl) {
         bail!("error adding received bundle: {} {}", bndl.id(), err);

@@ -360,12 +360,13 @@ impl WsAASession {
                         };
                         if let Ok(send_req) = send_data {
                             //let src = (*CONFIG.lock()).host_eid.clone();
-                            let bcf = if send_req.delivery_notification {
-                                BundleControlFlags::BUNDLE_MUST_NOT_FRAGMENTED
-                                    | BundleControlFlags::BUNDLE_STATUS_REQUEST_DELIVERY
-                            } else {
-                                BundleControlFlags::BUNDLE_MUST_NOT_FRAGMENTED
-                            };
+                            let mut bcf = BundleControlFlags::BUNDLE_MUST_NOT_FRAGMENTED;
+                            if send_req.delivery_notification {
+                                bcf = bcf | BundleControlFlags::BUNDLE_STATUS_REQUEST_DELIVERY;
+                            }
+                            if send_req.expire_older {
+                                bcf = bcf | BundleControlFlags::BUNDLE_EXPIRE_OLDER_BUNDLES;
+                            }
                             let dst = EndpointID::try_from(send_req.dst.clone());
                             let src = EndpointID::try_from(send_req.src.clone());
                             if dst.is_err() || src.is_err() {

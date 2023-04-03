@@ -1,6 +1,6 @@
 [profile.release]
 #debug = true
-strip = true  # Automatically strip symbols from the binary.
+strip = true # Automatically strip symbols from the binary.
 
 [workspace]
 
@@ -9,5 +9,9 @@ members = [
     "core/dtn7",
 
     # internal
-    "examples"
+    "examples",
 ]
+
+[patch.crates-io]
+bp7 = { git = "https://github.com/Wollwolke/bp7-rs.git", branch = "feat_mark_bundles_expired" }
+dtn7-plus = { git = "https://github.com/Wollwolke/dtn7-plus-rs.git", branch = "feat_mark_bundles_expired" }
