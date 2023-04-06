@@ -210,7 +210,7 @@ pub fn store_delete_expired() {
     }
 }
 
-pub fn store_expire_older_than(bndl: &Bundle) {
+pub fn store_remove_older_than(bndl: &Bundle) {
     let current_bp = BundlePack::from(bndl);
     let mut all_bids = (*STORE.lock()).bundles();
 
@@ -229,9 +229,7 @@ pub fn store_expire_older_than(bndl: &Bundle) {
                 "Bundle {} is superseded by {}, let it expire",
                 bp.id, current_bp.id
             );
-            bp.lifetime = 1;
-            // TODO: error handling?
-            store_update_metadata(bp);
+            store_remove(&bp.id);
         }
     }
 }

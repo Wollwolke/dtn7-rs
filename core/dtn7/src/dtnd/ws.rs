@@ -364,8 +364,8 @@ impl WsAASession {
                             if send_req.delivery_notification {
                                 bcf = bcf | BundleControlFlags::BUNDLE_STATUS_REQUEST_DELIVERY;
                             }
-                            if send_req.expire_older {
-                                bcf = bcf | BundleControlFlags::BUNDLE_EXPIRE_OLDER_BUNDLES;
+                            if send_req.remove_older {
+                                bcf = bcf | BundleControlFlags::BUNDLE_REMOVE_OLDER_BUNDLES;
                             }
                             let dst = EndpointID::try_from(send_req.dst.clone());
                             let src = EndpointID::try_from(send_req.src.clone());
