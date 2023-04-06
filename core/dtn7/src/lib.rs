@@ -217,13 +217,18 @@ pub fn store_expire_older_than(bndl: &Bundle) {
     let all_but_deleted: Vec<&mut BundlePack> = all_bids
         .iter_mut()
         .filter(|bp| {
-            !bp.has_constraint(Constraint::Deleted) && bp.destination == current_bp.destination
+            !bp.has_constraint(Constraint::Deleted)
+                && bp.destination == current_bp.destination
+                && bp.source == current_bp.source
         })
         .collect();
 
     for bp in all_but_deleted {
         if bp.creation_time < current_bp.creation_time {
-            debug!("Bundle {} is superseded by {}, let it expire", bp.id, current_bp.id);
+            debug!(
+                "Bundle {} is superseded by {}, let it expire",
+                bp.id, current_bp.id
+            );
             bp.lifetime = 1;
             // TODO: error handling?
             store_update_metadata(bp);
