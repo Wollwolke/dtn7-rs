@@ -360,13 +360,7 @@ impl WsAASession {
                         };
                         if let Ok(send_req) = send_data {
                             //let src = (*CONFIG.lock()).host_eid.clone();
-                            let mut bcf = BundleControlFlags::BUNDLE_MUST_NOT_FRAGMENTED;
-                            if send_req.delivery_notification {
-                                bcf = bcf | BundleControlFlags::BUNDLE_STATUS_REQUEST_DELIVERY;
-                            }
-                            if send_req.remove_older {
-                                bcf = bcf | BundleControlFlags::BUNDLE_REMOVE_OLDER_BUNDLES;
-                            }
+                            let bcf = send_req.bundle_flags | BundleControlFlags::BUNDLE_MUST_NOT_FRAGMENTED.bits();
                             let dst = EndpointID::try_from(send_req.dst.clone());
                             let src = EndpointID::try_from(send_req.src.clone());
                             if dst.is_err() || src.is_err() {
@@ -379,7 +373,7 @@ impl WsAASession {
                             let src2 = src.unwrap();
 
                             let pblock = bp7::primary::PrimaryBlockBuilder::default()
-                                .bundle_control_flags(bcf.bits())
+                                .bundle_control_flags(bcf)
                                 .destination(dst.unwrap())
                                 .source(src2.clone())
                                 .report_to(src2)
