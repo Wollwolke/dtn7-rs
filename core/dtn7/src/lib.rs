@@ -233,7 +233,9 @@ pub fn store_remove_older_than(bndl: &Bundle) {
                 "Bundle {} is superseded by {}, let it expire",
                 bp.id, current_bp.id
             );
-            store_remove(&bp.id);
+            if store_remove(&bp.id).is_err() {
+                error!("Error while deleting superseded bundle {}", bp.id);
+            }
         }
     }
 }
