@@ -229,7 +229,7 @@ pub fn store_remove_older_than(bndl: &Bundle) {
 
     for bp in all_but_deleted {
         if bp.creation_time < current_bp.creation_time {
-            debug!(
+            info!(
                 "Bundle {} is superseded by {}, let it expire",
                 bp.id, current_bp.id
             );
